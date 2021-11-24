@@ -1,4 +1,3 @@
-
 #include <raylib.h>
 
 
@@ -66,6 +65,15 @@ int main(void)
 
     // Funcion original de seno
     bool originalFunction = true;
+    
+    // Funcion triangular
+    bool triangularFunction = true;
+    
+    // Funcion cuadrática
+    bool cuadraticFunction = true;
+    
+    // Funcion sierra
+    bool sawFunction = true;
 
 
     
@@ -147,16 +155,25 @@ int main(void)
             if (waveLength > MAX_MUESTRAS/2) waveLength = MAX_MUESTRAS/2;
             if (waveLength < 1) waveLength = 1;
             
-            // Write sine wave.
+            // Write functino to buffer.
             for (int i = 0; i < waveLength*2; i++)
             {
                 if(originalFunction){
-                    bufferUnCiclo[i] = (short)(sinf(((2*PI*(float)i/waveLength)))*32000);
-                }else {
+                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                }else if (sawFunction) {
 
-                bufferUnCiclo[i] = (short)(sinf(((2*PI*(float)i/waveLength)))*32000)+(short)(sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
 
-                 }
+                }else if (triangularFunction) {
+
+
+                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                
+                }else if (cuadraticFunction) {
+
+                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+
+                }
 
             }
 
@@ -219,6 +236,12 @@ int main(void)
             // outerRadius = GuiSliderBar((Rectangle){ 600, 170, 120, 20 }, "OuterRadius", NULL, outerRadius, 0, 200);
 
             originalFunction = GuiCheckBox((Rectangle){ 600, 380, 20, 20 }, "Sin Original", originalFunction);
+        
+            triangularFunction = GuiCheckBox((Rectangle){ 500, 380, 20, 20 }, "Triangular", triangularFunction);
+        
+            cuadraticFunction = GuiCheckBox((Rectangle){ 400, 380, 20, 20 }, "Cuadrática", cuadraticFunction);
+        
+            sawFunction = GuiCheckBox((Rectangle){ 300, 380, 20, 20 }, "Sierra", sawFunction);
             //------------------------------------------------------------------------------
 
             
