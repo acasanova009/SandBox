@@ -73,13 +73,13 @@ int main(void)
 
 
     // Funcion original de seno
-    bool originalFunction = true;
+    bool senoFunction = true;
     
     // Funcion triangular
     bool triangularFunction = false;
     
     // Funcion cuadrática
-    bool cuadraticFunction = false;
+    bool cuadradaFunction = false;
     
     // Funcion sierra
     bool sawFunction = false;
@@ -107,7 +107,7 @@ int main(void)
         {
             // Compute wavelength. Limit size in both directions.
 
-            printf("wavelength = %i\n",waveLength);
+            
 
             int oldWavelength = waveLength;
             waveLength = (int)(22050/frecuencia);
@@ -118,11 +118,13 @@ int main(void)
             for (int i = 0; i < waveLength*2; i++)
             {
 
-                if(originalFunction){
+                if(senoFunction){
                     
-                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferEspecial[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
 
-                }else if (sawFunction) {
+                }
+                
+                if (sawFunction) {
 
                     
                     
@@ -138,7 +140,9 @@ int main(void)
 
                     
 
-                }else if (triangularFunction) {
+                }
+                
+                if (triangularFunction) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
@@ -148,7 +152,9 @@ int main(void)
                     }
                     bufferUnCiclo[i] =  bufferEspecial[i];
                 
-                }else if (cuadraticFunction) {
+                }
+                
+                if (cuadradaFunction) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
@@ -159,9 +165,9 @@ int main(void)
 
                     }
 
-                    bufferUnCiclo[i] =  bufferEspecial[i];
                 }
                 
+                bufferUnCiclo[i] =  bufferEspecial[i];
 
                 for (int i=0; i < MAX_MUESTRAS; i++)
                 {
@@ -220,9 +226,13 @@ int main(void)
             // DrawText("Presionar p para pausa.", 10, 50, 20, DARKGRAY);
             // DrawText("Presionar l para bucle de sonido.", 10, 70, 20, DARKGRAY);
 
+        if(senoFunction)
             perilla1 = GuiSliderBar((Rectangle){ 600, 60, 120, 20 }, "1", NULL, perilla1, 0, 100);
+        if(triangularFunction)
             perilla2 = GuiSliderBar((Rectangle){ 600, 100, 120, 20 }, "2", NULL, perilla2, 0, 100);
+        if(cuadradaFunction)
             perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, 0, 100);
+        if(sawFunction)
             perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
             
@@ -237,13 +247,13 @@ int main(void)
             // innerRadius = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "InnerRadius", NULL, innerRadius, 0, 100);
             // outerRadius = GuiSliderBar((Rectangle){ 600, 170, 120, 20 }, "OuterRadius", NULL, outerRadius, 0, 200);
 
-            originalFunction = GuiCheckBox((Rectangle){ 200, 380, 20, 20 }, "Sin Original", originalFunction);
+            senoFunction = GuiCheckBox((Rectangle){ 750, 60, 20, 20 }, "Sin Original", senoFunction);
         
-            triangularFunction = GuiCheckBox((Rectangle){ 400, 380, 20, 20 }, "Triangular", triangularFunction);
+            triangularFunction = GuiCheckBox((Rectangle){ 750, 100, 20, 20 }, "Triangular", triangularFunction);
         
-            cuadraticFunction = GuiCheckBox((Rectangle){ 500, 380, 20, 20 }, "Cuadrática", cuadraticFunction);
+            cuadradaFunction = GuiCheckBox((Rectangle){ 750, 140, 20, 20 }, "Cuadrada", cuadradaFunction);
         
-            sawFunction = GuiCheckBox((Rectangle){ 300, 380, 20, 20 }, "Sierra", sawFunction);
+            sawFunction = GuiCheckBox((Rectangle){ 750, 180, 20, 20 }, "Sierra", sawFunction);
             //------------------------------------------------------------------------------
 
             for (int i = 0; i < pantallaAncho; i++)
