@@ -45,7 +45,6 @@ int main(void)
     short *bufferPorFrame = (short *)malloc(sizeof(short)*MAX_MUESTRAS_POR_FRAME);
 
     PlayAudioStream(stream);        // Start processing stream buffer (no bufferUnCiclo loaded currently)
-    SetMasterVolume(0.1);
   
     // Cycles per second (hz)
     float frecuencia = 0.0f;
@@ -68,7 +67,7 @@ int main(void)
     float perilla3= 50.0f;
     float perilla4= 1.0f;
     float perilla5= 50.0f;
-    float perilla6= 50.0f;
+    float perilla6= 0.1f;
     float perilla7= 50.0f;
     float perilla8= 50.0f;
 
@@ -95,7 +94,7 @@ int main(void)
     {
         // Update
         //----------------------------------------------------------------------------------
-
+        SetMasterVolume(perilla6);
         
         frecuencia = seleccionarNota(perilla5);
         
@@ -230,7 +229,7 @@ int main(void)
             perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 5);
             DrawText(TextFormat("Escala actual: %i",(int)perilla5), 20, 340, 20, BLACK);
 
-            // perilla6 = GuiSliderBar((Rectangle){ 600, 260, 120, 20 }, "6", NULL, perilla6, -1.0, 1.00);
+            perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.25);
             // perilla7 = GuiSliderBar((Rectangle){ 600, 300, 120, 20 }, "7", NULL, perilla7, -1.0, 1.00);
             // perilla8 = GuiSliderBar((Rectangle){ 600, 340, 120, 20 }, "8", NULL, perilla8, -1.0, 1.00);
 
