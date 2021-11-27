@@ -5,7 +5,7 @@
 #include <math.h>           // Required for: sinf()
 #include <string.h>         // Required for: memcpy()
 
-
+#include <time.h>
 
 #define MAX_MUESTRAS               512
 #define MAX_MUESTRAS_POR_FRAME   4096
@@ -18,6 +18,7 @@
 #include "extras/raygui.h"                 // Required for GUI controls
 
 float seleccionarNota(float perilla5);
+float valorRandomAEscala(float perilla5);
 
 int main(void)
 {
@@ -66,16 +67,16 @@ int main(void)
 
    int amplitud=32000;
 
-    float perilla1= 50.0f;
-    float perilla2= 50.0f;
-    float perilla3= 50.0f;
+    float perilla1= 1.0f;
+    float perilla2= 1.0f;
+    float perilla3= 1.0f;
     float perilla4= 1.0f;
     float perilla5= 50.0f;
     float perilla6= 0.1f;
     float perilla7= 50.0f;
     float perilla8= 50.0f;
 
-
+    bool escalasAleatorias = false;
     // Funcion original de seno
     bool senoFunction = true;
     
@@ -89,6 +90,10 @@ int main(void)
     bool sawFunction = false;
 
 
+    time_t t;
+    srand((unsigned) time(&t));
+
+
     
     SetTargetFPS(30);               // Set our game to run at 30 frames-per-second
     //--------------------------------------------------------------------------------------
@@ -99,16 +104,21 @@ int main(void)
         // Update
         //----------------------------------------------------------------------------------
         SetMasterVolume(perilla6);
-        
         frecuencia = seleccionarNota(perilla5);
+
+        if(escalasAleatorias){
+            frecuencia = seleccionarNota(valorRandomAEscala(perilla5));
+        }
+
+        
         
 
          
 
         // Rewrite the sine wave.
         // Compute two cycles to allow the buffer padding, simplifying any modulation, resampling, etc.
-        if (frecuencia != viejaFrecuencia)
-        {
+        // if (frecuencia != viejaFrecuencia)
+        // {
             // Compute wavelength. Limit size in both directions.
 
             
@@ -124,25 +134,17 @@ int main(void)
 
                 if(senoFunction){
                     
-                    bufferEspecial[i] += (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferEspecial[i] += perilla1* (sinf(((2*PI*(float)i/waveLength)))*32000);
 
                 }
                 
-                if (sawFunction) {
-
-                    for(int j =1; j<MAX_MUESTRAS;j=j+2)
-                    {
-                        bufferEspecial[i]+= sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
-                        bufferEspecial[i]-=sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
-                    }
-                }
                 
                 if (triangularFunction) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferEspecial[i]+= sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
-                        bufferEspecial[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferEspecial[i]+=perilla2* sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
+                        bufferEspecial[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
                     
@@ -153,13 +155,21 @@ int main(void)
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferEspecial[i]+=  sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
-                        bufferEspecial[i]+=    sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferEspecial[i]+= perilla3* sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
+                        bufferEspecial[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
 
                 }
                 
+                if (sawFunction) {
+
+                    for(int j =1; j<MAX_MUESTRAS;j=j+2)
+                    {
+                        bufferEspecial[i]+=perilla4*  sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
+                        bufferEspecial[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
+                    }
+                }
                 bufferUnCiclo[i] =  bufferEspecial[i];
 
                 for (int i=0; i < MAX_MUESTRAS; i++)
@@ -175,7 +185,7 @@ int main(void)
             readCursor = (int)(readCursor * ((float)waveLength / (float)oldWavelength));
             
             viejaFrecuencia = frecuencia;
-        }
+        // }
 
         // Refill audio stream if required
         if (IsAudioStreamProcessed(stream))
@@ -220,17 +230,20 @@ int main(void)
             // DrawText("Presionar l para bucle de sonido.", 10, 70, 20, DARKGRAY);
 
         if(senoFunction)
-            perilla1 = GuiSliderBar((Rectangle){ 600, 60, 120, 20 }, "1", NULL, perilla1, 0, 100);
+            perilla1 = GuiSliderBar((Rectangle){ 600, 60, 120, 20 }, "1", NULL, perilla1, -1.0f, 1.0f);
         if(triangularFunction)
-            perilla2 = GuiSliderBar((Rectangle){ 600, 100, 120, 20 }, "2", NULL, perilla2, 0, 100);
+            perilla2 = GuiSliderBar((Rectangle){ 600, 100, 120, 20 }, "2", NULL, perilla2, -1.0f, 1.0f);
         if(cuadradaFunction)
-            perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, 0, 100);
+            perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, -1.0f, 1.0f);
         if(sawFunction)
             perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
-            
-            perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 3);
-            DrawText(TextFormat("Escala actual: %i",(int)perilla5), 20, 340, 20, BLACK);
+            if(!escalasAleatorias)
+            {
+                perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 3);
+                DrawText(TextFormat("Escala manual: %i",(int)perilla5), 20, 340, 20, BLACK);
+
+            }
 
             perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.25);
             // perilla7 = GuiSliderBar((Rectangle){ 600, 300, 120, 20 }, "7", NULL, perilla7, -1.0, 1.00);
@@ -239,6 +252,9 @@ int main(void)
 
             // innerRadius = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "InnerRadius", NULL, innerRadius, 0, 100);
             // outerRadius = GuiSliderBar((Rectangle){ 600, 170, 120, 20 }, "OuterRadius", NULL, outerRadius, 0, 200);
+
+            escalasAleatorias = GuiCheckBox((Rectangle){ 150, 380, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
+
 
             senoFunction = GuiCheckBox((Rectangle){ 750, 60, 20, 20 }, "Sin Original", senoFunction);
         
@@ -331,4 +347,15 @@ float seleccionarNota(float perilla5)
             }
 
             return frequency/perilla5;
+}
+float valorRandomAEscala(float perilla5){
+
+     //random in range from 5-10;
+
+    static int lower = 1, upper = 5;
+
+    float i = (rand()%(upper - lower + 1)) + lower;
+    
+
+    return i;
 }
