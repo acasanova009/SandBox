@@ -168,7 +168,7 @@ int main(void)
 
                 }else if (sawFunction) {
 
-                    // bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud/1)-(short)((sinf((2*PI*(float)2*i/waveLength)))*(amplitud/2))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))-(short)((sinf((2*PI*(float)4*i/waveLength)))*(amplitud/4))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))-(short)((sinf((2*PI*(float)6*i/waveLength)))*(amplitud/6))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7))-(short)((sinf((2*PI*(float)8*i/waveLength)))*(amplitud/8)));
+                    
                     
                     //For 1 j<N j=j+2
                     for(int j =1; j<250;j=j+2)
@@ -178,7 +178,7 @@ int main(void)
                     }
                         
 
-                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    
 
                 }else if (triangularFunction) {
 
@@ -188,14 +188,15 @@ int main(void)
                         bufferUnCiclo[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
-
-                    // bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*(-amplitud))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(-amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
-                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
                 
                 }else if (cuadraticFunction) {
 
-                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud)+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
-                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    for(int j =1; j<250;j=j+4)
+                    {
+                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
+                        bufferUnCiclo[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+
+                    }
 
                 }
 
