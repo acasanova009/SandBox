@@ -10,10 +10,14 @@
 #define MAX_MUESTRAS               512
 #define MAX_MUESTRAS_POR_FRAME   4096
 
+#define MAX_SENOS 1000
+
 #include <raylib.h>
 
 #define RAYGUI_IMPLEMENTATION
 #include "extras/raygui.h"                 // Required for GUI controls
+
+float seleccionarNota(float perilla5);
 
 int main(void)
 {
@@ -32,6 +36,8 @@ int main(void)
     AudioStream stream = LoadAudioStream(44100, 16, 1);
 
     // Buffer for the single cycle waveform we are synthesizing
+    // short *bugger = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
+    short bufferEspecial[MAX_MUESTRAS] = {0};
     // Size in bytes. 2bytes  * 512 = 1024bytes Unsigned long
     short *bufferUnCiclo = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
 
@@ -60,7 +66,7 @@ int main(void)
     float perilla1= 50.0f;
     float perilla2= 50.0f;
     float perilla3= 50.0f;
-    float perilla4= 50.0f;
+    float perilla4= 1.0f;
     float perilla5= 50.0f;
     float perilla6= 50.0f;
     float perilla7= 50.0f;
@@ -68,7 +74,7 @@ int main(void)
 
 
     // Funcion original de seno
-    bool originalFunction = false;
+    bool originalFunction = true;
     
     // Funcion triangular
     bool triangularFunction = false;
@@ -91,60 +97,10 @@ int main(void)
         //----------------------------------------------------------------------------------
 
         
-        frecuencia = 0;
+        frecuencia = seleccionarNota(perilla5);
         
 
-         // frecuencia para tecla DO
-            if (IsKeyDown(KEY_Z)) {
-               
-                frecuencia = 261.6f;
-
-            }
-            // frecuencia para tecla DO #
-            if (IsKeyDown(KEY_S)) {
-                frecuencia = 277.2f;
-            }
-            //frecuencia para tecla RE
-            if (IsKeyDown(KEY_X)) {
-                frecuencia = 293.6f;
-            }
-            //frecuencia para tecla RE#
-            if (IsKeyDown(KEY_D))  {
-                frecuencia = 311.1f;
-            }
-            //frecuencia para tecla MI
-            if (IsKeyDown(KEY_C)) {
-                frecuencia = 329.6f;
-            }
-            //frecuencia para tecla FA
-            if (IsKeyDown(KEY_V)) {
-                frecuencia = 349.2f;
-            }
-            //frecuencia para tecla FA#
-            if (IsKeyDown(KEY_G)) {
-                frecuencia = 370.0f;
-            }
-            //frecuencia para tecla SOL
-            if (IsKeyDown(KEY_B)) {
-                frecuencia = 392.0f;
-            }
-            //frecuencia para tecla SOL#
-            if (IsKeyDown(KEY_H)) {
-                frecuencia = 415.3f;
-            }
-            //frecuencia para tecla LA
-            if (IsKeyDown(KEY_N)) {
-                frecuencia = 440.0f;
-            }
-            //frecuencia para tecla LA#
-            if (IsKeyDown(KEY_J)) {
-                frecuencia = 466.2f;
-            }
-            //frecuencia para tecla SI
-            if (IsKeyDown(KEY_M)) {
-                frecuencia = 493.2f;
-            }
-            
+         
 
         // Rewrite the sine wave.
         // Compute two cycles to allow the buffer padding, simplifying any modulation, resampling, etc.
@@ -162,6 +118,7 @@ int main(void)
             // Write functino to buffer.
             for (int i = 0; i < waveLength*2; i++)
             {
+
                 if(originalFunction){
                     
                     bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
@@ -171,34 +128,48 @@ int main(void)
                     
                     
                     //For 1 j<N j=j+2
-                    for(int j =1; j<250;j=j+2)
+                    for(int j =1; j<MAX_MUESTRAS;j=j+2)
                     {
-                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
-                        bufferUnCiclo[i]-=sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
+                        bufferEspecial[i]+= sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
+                        bufferEspecial[i]-=sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
                     }
-                        
+                    
+                    bufferUnCiclo[i] =  bufferEspecial[i];
+
 
                     
 
                 }else if (triangularFunction) {
 
-                    for(int j =1; j<250;j=j+4)
+                    for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
-                        bufferUnCiclo[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferEspecial[i]+= sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
+                        bufferEspecial[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
+                    bufferUnCiclo[i] =  bufferEspecial[i];
                 
                 }else if (cuadraticFunction) {
 
-                    for(int j =1; j<250;j=j+4)
+                    for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
-                        bufferUnCiclo[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferEspecial[i]+=  sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
+                        bufferEspecial[i]+=    sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        // bufferUnCiclo[i]+= perilla4*  sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
+                        // bufferUnCiclo[i]+=  perilla4*  sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
 
+                    bufferUnCiclo[i] =  bufferEspecial[i];
                 }
+                
+
+                for (int i=0; i < MAX_MUESTRAS; i++)
+                {
+                        bufferEspecial[i] = 0;
+                }
+                
+                
 
             }
 
@@ -253,12 +224,15 @@ int main(void)
             perilla1 = GuiSliderBar((Rectangle){ 600, 60, 120, 20 }, "1", NULL, perilla1, 0, 100);
             perilla2 = GuiSliderBar((Rectangle){ 600, 100, 120, 20 }, "2", NULL, perilla2, 0, 100);
             perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, 0, 100);
-            perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, 0, 100);
-            perilla5 = GuiSliderBar((Rectangle){ 600, 220, 120, 20 }, "5", NULL, perilla5, 0, 100);
+            perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
-            perilla6 = GuiSliderBar((Rectangle){ 600, 260, 120, 20 }, "6", NULL, perilla6, -1.0, 1.00);
-            perilla7 = GuiSliderBar((Rectangle){ 600, 300, 120, 20 }, "7", NULL, perilla7, -1.0, 1.00);
-            perilla8 = GuiSliderBar((Rectangle){ 600, 340, 120, 20 }, "8", NULL, perilla8, -1.0, 1.00);
+            
+            perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 5);
+            DrawText(TextFormat("Escala actual: %i",(int)perilla5), 20, 340, 20, BLACK);
+
+            // perilla6 = GuiSliderBar((Rectangle){ 600, 260, 120, 20 }, "6", NULL, perilla6, -1.0, 1.00);
+            // perilla7 = GuiSliderBar((Rectangle){ 600, 300, 120, 20 }, "7", NULL, perilla7, -1.0, 1.00);
+            // perilla8 = GuiSliderBar((Rectangle){ 600, 340, 120, 20 }, "8", NULL, perilla8, -1.0, 1.00);
 
 
             // innerRadius = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "InnerRadius", NULL, innerRadius, 0, 100);
@@ -300,4 +274,59 @@ int main(void)
     //--------------------------------------------------------------------------------------
 
     return 0;
+}
+
+float seleccionarNota(float perilla5)
+{   
+            float frequency = 0;
+            if (IsKeyDown(KEY_Z)) {
+                frequency = 261.6f;
+
+            }
+            // frequency para tecla DO #
+            if (IsKeyDown(KEY_S)) {
+                frequency = 277.2f;
+            }
+            //frequency para tecla RE
+            if (IsKeyDown(KEY_X)) {
+                frequency = 293.6f;
+            }
+            //frequency para tecla RE#
+            if (IsKeyDown(KEY_D))  {
+                frequency = 311.1f;
+            }
+            //frequency para tecla MI
+            if (IsKeyDown(KEY_C)) {
+                frequency = 329.6f;
+            }
+            //frequency para tecla FA
+            if (IsKeyDown(KEY_V)) {
+                frequency = 349.2f;
+            }
+            //frequency para tecla FA#
+            if (IsKeyDown(KEY_G)) {
+                frequency = 370.0f;
+            }
+            //frequency para tecla SOL
+            if (IsKeyDown(KEY_B)) {
+                frequency = 392.0f;
+            }
+            //frequency para tecla SOL#
+            if (IsKeyDown(KEY_H)) {
+                frequency = 415.3f;
+            }
+            //frequency para tecla LA
+            if (IsKeyDown(KEY_N)) {
+                frequency = 440.0f;
+            }
+            //frequency para tecla LA#
+            if (IsKeyDown(KEY_J)) {
+                frequency = 466.2f;
+            }
+            //frequency para tecla SI
+            if (IsKeyDown(KEY_M)) {
+                frequency = 493.2f;
+            }
+
+            return frequency/perilla5;
 }
