@@ -38,6 +38,10 @@ int main(void)
     // Buffer for the single cycle waveform we are synthesizing
     // short *bugger = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
     short bufferEspecial[MAX_MUESTRAS] = {0};
+
+    for (int i=0; i < MAX_MUESTRAS; i++)
+        bufferEspecial[i] = 0;
+    
     // Size in bytes. 2bytes  * 512 = 1024bytes Unsigned long
     short *bufferUnCiclo = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
 
@@ -120,26 +124,17 @@ int main(void)
 
                 if(senoFunction){
                     
-                    bufferEspecial[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferEspecial[i] += (sinf(((2*PI*(float)i/waveLength)))*32000);
 
                 }
                 
                 if (sawFunction) {
 
-                    
-                    
-                    //For 1 j<N j=j+2
                     for(int j =1; j<MAX_MUESTRAS;j=j+2)
                     {
                         bufferEspecial[i]+= sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
                         bufferEspecial[i]-=sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
                     }
-                    
-                    bufferUnCiclo[i] =  bufferEspecial[i];
-
-
-                    
-
                 }
                 
                 if (triangularFunction) {
@@ -150,7 +145,7 @@ int main(void)
                         bufferEspecial[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
-                    bufferUnCiclo[i] =  bufferEspecial[i];
+                    
                 
                 }
                 
@@ -160,8 +155,6 @@ int main(void)
                     {
                         bufferEspecial[i]+=  sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
                         bufferEspecial[i]+=    sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
-                        // bufferUnCiclo[i]+= perilla4*  sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
-                        // bufferUnCiclo[i]+=  perilla4*  sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
                     }
 
@@ -236,7 +229,7 @@ int main(void)
             perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
             
-            perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 5);
+            perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 3);
             DrawText(TextFormat("Escala actual: %i",(int)perilla5), 20, 340, 20, BLACK);
 
             perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.25);
