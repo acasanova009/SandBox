@@ -1313,7 +1313,8 @@ void GuiSetStyle(int control, int property, int value)
     // Default properties are propagated to all controls
     if ((control == 0) && (property < RAYGUI_MAX_PROPS_BASE))
     {
-        for (int i = 1; i < RAYGUI_MAX_CONTROLS; i++) guiStyle[i*(RAYGUI_MAX_PROPS_BASE + RAYGUI_MAX_PROPS_EXTENDED) + property] = value;
+        for (int i = 1
+        ; i < RAYGUI_MAX_CONTROLS; i++) guiStyle[i*(RAYGUI_MAX_PROPS_BASE + RAYGUI_MAX_PROPS_EXTENDED) + property] = value;
     }
 }
 

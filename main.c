@@ -19,8 +19,8 @@ int main(void)
 {
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int pantallaAncho = 800;
-    const int pantallaAlto = 450;
+    const int pantallaAncho = 1200;
+    const int pantallaAlto = 600;
 
     InitWindow(pantallaAncho, pantallaAlto, "Sintetizador de audio");
 
@@ -39,6 +39,7 @@ int main(void)
     short *bufferPorFrame = (short *)malloc(sizeof(short)*MAX_MUESTRAS_POR_FRAME);
 
     PlayAudioStream(stream);        // Start processing stream buffer (no bufferUnCiclo loaded currently)
+    SetMasterVolume(0.1);
   
     // Cycles per second (hz)
     float frecuencia = 0.0f;
@@ -67,16 +68,16 @@ int main(void)
 
 
     // Funcion original de seno
-    bool originalFunction = true;
+    bool originalFunction = false;
     
     // Funcion triangular
-    bool triangularFunction = true;
+    bool triangularFunction = false;
     
     // Funcion cuadrática
-    bool cuadraticFunction = true;
+    bool cuadraticFunction = false;
     
     // Funcion sierra
-    bool sawFunction = true;
+    bool sawFunction = false;
 
 
     
@@ -167,13 +168,28 @@ int main(void)
 
                 }else if (sawFunction) {
 
-                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud)-(short)((sinf((2*PI*(float)2*i/waveLength)))*(amplitud/2))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))-(short)((sinf((2*PI*(float)4*i/waveLength)))*(amplitud/4))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))-(short)((sinf((2*PI*(float)6*i/waveLength)))*(amplitud/6))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7))-(short)((sinf((2*PI*(float)8*i/waveLength)))*(amplitud/8)));
+                    // bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud/1)-(short)((sinf((2*PI*(float)2*i/waveLength)))*(amplitud/2))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))-(short)((sinf((2*PI*(float)4*i/waveLength)))*(amplitud/4))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))-(short)((sinf((2*PI*(float)6*i/waveLength)))*(amplitud/6))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7))-(short)((sinf((2*PI*(float)8*i/waveLength)))*(amplitud/8)));
+                    
+                    //For 1 j<N j=j+2
+                    for(int j =1; j<250;j=j+2)
+                    {
+                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
+                        bufferUnCiclo[i]-=sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
+                    }
+                        
+
                     // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
 
                 }else if (triangularFunction) {
 
+                    for(int j =1; j<250;j=j+4)
+                    {
+                        bufferUnCiclo[i]+= sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
+                        bufferUnCiclo[i]+=sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
 
-                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*(-amplitud))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(-amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
+                    }
+
+                    // bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*(-amplitud))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(-amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
                     // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
                 
                 }else if (cuadraticFunction) {
@@ -247,15 +263,24 @@ int main(void)
             // innerRadius = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "InnerRadius", NULL, innerRadius, 0, 100);
             // outerRadius = GuiSliderBar((Rectangle){ 600, 170, 120, 20 }, "OuterRadius", NULL, outerRadius, 0, 200);
 
-            originalFunction = GuiCheckBox((Rectangle){ 600, 380, 20, 20 }, "Sin Original", originalFunction);
+            originalFunction = GuiCheckBox((Rectangle){ 200, 380, 20, 20 }, "Sin Original", originalFunction);
         
-            triangularFunction = GuiCheckBox((Rectangle){ 500, 380, 20, 20 }, "Triangular", triangularFunction);
+            triangularFunction = GuiCheckBox((Rectangle){ 400, 380, 20, 20 }, "Triangular", triangularFunction);
         
-            cuadraticFunction = GuiCheckBox((Rectangle){ 400, 380, 20, 20 }, "Cuadrática", cuadraticFunction);
+            cuadraticFunction = GuiCheckBox((Rectangle){ 500, 380, 20, 20 }, "Cuadrática", cuadraticFunction);
         
             sawFunction = GuiCheckBox((Rectangle){ 300, 380, 20, 20 }, "Sierra", sawFunction);
             //------------------------------------------------------------------------------
 
+            for (int i = 0; i < pantallaAncho; i++)
+            {
+                // position.x = (float)i;
+                
+                DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
+
+                DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, RED);
+                
+            }
             
 
         EndDrawing();
