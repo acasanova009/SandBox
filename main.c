@@ -54,13 +54,16 @@ int main(void)
 
     // Vector2 position = { 0, 0 };
 
-   
+   int amplitud=32000;
 
     float perilla1= 50.0f;
     float perilla2= 50.0f;
     float perilla3= 50.0f;
     float perilla4= 50.0f;
     float perilla5= 50.0f;
+    float perilla6= 50.0f;
+    float perilla7= 50.0f;
+    float perilla8= 50.0f;
 
 
     // Funcion original de seno
@@ -159,19 +162,24 @@ int main(void)
             for (int i = 0; i < waveLength*2; i++)
             {
                 if(originalFunction){
+                    
                     bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+
                 }else if (sawFunction) {
 
-                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud)-(short)((sinf((2*PI*(float)2*i/waveLength)))*(amplitud/2))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))-(short)((sinf((2*PI*(float)4*i/waveLength)))*(amplitud/4))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))-(short)((sinf((2*PI*(float)6*i/waveLength)))*(amplitud/6))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7))-(short)((sinf((2*PI*(float)8*i/waveLength)))*(amplitud/8)));
+                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
 
                 }else if (triangularFunction) {
 
 
-                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*(-amplitud))+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(-amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
+                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
                 
                 }else if (cuadraticFunction) {
 
-                    bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))*amplitud)+(short)((sinf((2*PI*(float)3*i/waveLength)))*(amplitud/3))+(short)((sinf((2*PI*(float)5*i/waveLength)))*(amplitud/5))+(short)((sinf((2*PI*(float)7*i/waveLength)))*(amplitud/7)));
+                    // bufferUnCiclo[i] = (sinf(((2*PI*(float)i/waveLength)))*32000);
 
                 }
 
@@ -230,6 +238,10 @@ int main(void)
             perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, 0, 100);
             perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, 0, 100);
             perilla5 = GuiSliderBar((Rectangle){ 600, 220, 120, 20 }, "5", NULL, perilla5, 0, 100);
+
+            perilla6 = GuiSliderBar((Rectangle){ 600, 260, 120, 20 }, "6", NULL, perilla6, -1.0, 1.00);
+            perilla7 = GuiSliderBar((Rectangle){ 600, 300, 120, 20 }, "7", NULL, perilla7, -1.0, 1.00);
+            perilla8 = GuiSliderBar((Rectangle){ 600, 340, 120, 20 }, "8", NULL, perilla8, -1.0, 1.00);
 
 
             // innerRadius = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "InnerRadius", NULL, innerRadius, 0, 100);
