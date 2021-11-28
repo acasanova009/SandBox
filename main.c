@@ -26,22 +26,22 @@ int main(void)
     //--------------------------------------------------------------------------------------
     const int pantallaAncho = 1200;
     const int pantallaAlto = 600;
-
+    //Se iniia la patnnala
     InitWindow(pantallaAncho, pantallaAlto, "Sintetizador de audio");
-
+    //Se conecta con el disposiso ade audio
     InitAudioDevice();              // Initialize audio device
 
     SetAudioStreamBufferSizeDefault(MAX_MUESTRAS_POR_FRAME);
 
-    // Init raw audio stream (sample rate: 22050, sample size: 16bit-short, channels: 1-mono)
-    AudioStream stream = LoadAudioStream(44100, 16, 1);
+    // Init raw audio torrenteDeAudio (sample rate: 22050, sample size: 16bit-short, channels: 1-mono)
+    AudioStream torrenteDeAudio = LoadAudioStream(44100, 16, 1);
 
     // Buffer for the single cycle waveform we are synthesizing
     // short *bugger = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
-    short bufferEspecial[MAX_MUESTRAS] = {0};
+    short bufferSumaDeSignals[MAX_MUESTRAS] = {0};
 
     for (int i=0; i < MAX_MUESTRAS; i++)
-        bufferEspecial[i] = 0;
+        bufferSumaDeSignals[i] = 0;
     
     // Size in bytes. 2bytes  * 512 = 1024bytes Unsigned long
     short *bufferUnCiclo = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
@@ -49,7 +49,7 @@ int main(void)
     // Frame buffer, describing the waveform when repeated over the course of a frame
     short *bufferPorFrame = (short *)malloc(sizeof(short)*MAX_MUESTRAS_POR_FRAME);
 
-    PlayAudioStream(stream);        // Start processing stream buffer (no bufferUnCiclo loaded currently)
+    PlayAudioStream(torrenteDeAudio);        // Start processing torrenteDeAudio buffer (no bufferUnCiclo loaded currently)
   
     // Cycles per second (hz)
     float frecuencia = 0.0f;
@@ -58,12 +58,12 @@ int main(void)
     float viejaFrecuencia = 1.0f;
 
     // Cursor to read and copy the samples of the sine wave buffer
-    int readCursor = 0;
+    int cursorDeLectura = 0;
 
     // Computed size in samples of the sine wave
-    int waveLength = 1;
+    int longitudDeOnda = 1;
 
-    // Vector2 position = { 0, 0 };
+    
 
    int amplitud=32000;
 
@@ -78,16 +78,16 @@ int main(void)
 
     bool escalasAleatorias = false;
     // Funcion original de seno
-    bool senoFunction = true;
+    bool funcionSenoActivada = true;
     
     // Funcion triangular
-    bool triangularFunction = false;
+    bool funcionTrinagularActivada = false;
     
     // Funcion cuadrática
-    bool cuadradaFunction = false;
+    bool funcionCuadraticaActivada = false;
     
     // Funcion sierra
-    bool sawFunction = false;
+    bool fundionSierraActivada = false;
 
 
     time_t t;
@@ -123,58 +123,58 @@ int main(void)
 
             
 
-            int oldWavelength = waveLength;
-            waveLength = (int)(22050/frecuencia);
-            if (waveLength > MAX_MUESTRAS/2) waveLength = MAX_MUESTRAS/2;
-            if (waveLength < 1) waveLength = 1;
+            int viejaLongitudDeOnda = longitudDeOnda;
+            longitudDeOnda = (int)(22050/frecuencia);
+            if (longitudDeOnda > MAX_MUESTRAS/2) longitudDeOnda = MAX_MUESTRAS/2;
+            if (longitudDeOnda < 1) longitudDeOnda = 1;
             
             // Write functino to buffer.
-            for (int i = 0; i < waveLength*2; i++)
+            for (int i = 0; i < longitudDeOnda*2; i++)
             {
 
-                if(senoFunction){
+                if(funcionSenoActivada){
                     
-                    bufferEspecial[i] += perilla1* (sinf(((2*PI*(float)i/waveLength)))*32000);
+                    bufferSumaDeSignals[i] += perilla1* (sinf(((2*PI*(float)i/longitudDeOnda)))*32000);
 
                 }
                 
                 
-                if (triangularFunction) {
+                if (funcionTrinagularActivada) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferEspecial[i]+=perilla2* sinf(2*PI*(float)j*i/waveLength)*(-amplitud/j);     //1
-                        bufferEspecial[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)j*i/longitudDeOnda)*(-amplitud/j);     //1
+                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
 
                     }
                     
                 
                 }
                 
-                if (cuadradaFunction) {
+                if (funcionCuadraticaActivada) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+4)
                     {
-                        bufferEspecial[i]+= perilla3* sinf(2*PI*(float)j*i/waveLength)*(amplitud/j);     //1
-                        bufferEspecial[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/waveLength)*(amplitud/(j+2));  //3
+                        bufferSumaDeSignals[i]+= perilla3* sinf(2*PI*(float)j*i/longitudDeOnda)*(amplitud/j);     //1
+                        bufferSumaDeSignals[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
 
                     }
 
                 }
-                
-                if (sawFunction) {
+                //Aqui se desarolla la funcion sierra
+                if (fundionSierraActivada) {
 
                     for(int j =1; j<MAX_MUESTRAS;j=j+2)
                     {
-                        bufferEspecial[i]+=perilla4*  sinf(2*PI*(float)j*i/waveLength)*amplitud/j;
-                        bufferEspecial[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/waveLength)*(amplitud/(j+1));
+                        bufferSumaDeSignals[i]+=perilla4*  sinf(2*PI*(float)j*i/longitudDeOnda)*amplitud/j;
+                        bufferSumaDeSignals[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/longitudDeOnda)*(amplitud/(j+1));
                     }
                 }
-                bufferUnCiclo[i] =  bufferEspecial[i];
+                bufferUnCiclo[i] =  bufferSumaDeSignals[i];
 
                 for (int i=0; i < MAX_MUESTRAS; i++)
                 {
-                        bufferEspecial[i] = 0;
+                        bufferSumaDeSignals[i] = 0;
                 }
                 
                 
@@ -182,38 +182,38 @@ int main(void)
             }
 
             // Scale read cursor's position to minimize transition artifacts
-            readCursor = (int)(readCursor * ((float)waveLength / (float)oldWavelength));
+            cursorDeLectura = (int)(cursorDeLectura * ((float)longitudDeOnda / (float)viejaLongitudDeOnda));
             
             viejaFrecuencia = frecuencia;
         // }
 
-        // Refill audio stream if required
-        if (IsAudioStreamProcessed(stream))
+        //Se rellena el strem de adudio desde el buffer
+        if (IsAudioStreamProcessed(torrenteDeAudio))
         {
             // Synthesize a buffer that is exactly the requested size
-            int writeCursor = 0;
+            int cursorDeEscritura = 0;
 
-            while (writeCursor < MAX_MUESTRAS_POR_FRAME)
+            while (cursorDeEscritura < MAX_MUESTRAS_POR_FRAME)
             {
                 // Start by trying to write the whole chunk at once
-                int writeLength = MAX_MUESTRAS_POR_FRAME-writeCursor;
+                int tamanoEscritura = MAX_MUESTRAS_POR_FRAME-cursorDeEscritura;
 
                 // Limit to the maximum readable size
-                int readLength = waveLength-readCursor;
+                int tamanodeLectura = longitudDeOnda-cursorDeLectura;
 
-                if (writeLength > readLength) writeLength = readLength;
+                if (tamanoEscritura > tamanodeLectura) tamanoEscritura = tamanodeLectura;
 
                 // Write the slice
-                memcpy(bufferPorFrame + writeCursor, bufferUnCiclo + readCursor, writeLength*sizeof(short));
+                memcpy(bufferPorFrame + cursorDeEscritura, bufferUnCiclo + cursorDeLectura, tamanoEscritura*sizeof(short));
 
                 // Update cursors and loop audio
-                readCursor = (readCursor + writeLength) % waveLength;
+                cursorDeLectura = (cursorDeLectura + tamanoEscritura) % longitudDeOnda;
 
-                writeCursor += writeLength;
+                cursorDeEscritura += tamanoEscritura;
             }
 
-            // Copy finished frame to audio stream
-            UpdateAudioStream(stream, bufferPorFrame, MAX_MUESTRAS_POR_FRAME);
+            // Copy finished frame to audio torrenteDeAudio
+            UpdateAudioStream(torrenteDeAudio, bufferPorFrame, MAX_MUESTRAS_POR_FRAME);
         }
         //----------------------------------------------------------------------------------
 
@@ -229,13 +229,13 @@ int main(void)
             // DrawText("Presionar p para pausa.", 10, 50, 20, DARKGRAY);
             // DrawText("Presionar l para bucle de sonido.", 10, 70, 20, DARKGRAY);
 
-        if(senoFunction)
+        if(funcionSenoActivada)
             perilla1 = GuiSliderBar((Rectangle){ 600, 380, 120, 20 }, "1", NULL, perilla1, -1.0f, 1.0f);
-        if(triangularFunction)
+        if(funcionTrinagularActivada)
             perilla2 = GuiSliderBar((Rectangle){ 600, 420, 120, 20 }, "2", NULL, perilla2, -1.0f, 1.0f);
-        if(cuadradaFunction)
+        if(funcionCuadraticaActivada)
             perilla3 = GuiSliderBar((Rectangle){ 600, 460, 120, 20 }, "3", NULL, perilla3, -1.0f, 1.0f);
-        if(sawFunction)
+        if(fundionSierraActivada)
             perilla4 = GuiSliderBar((Rectangle){ 600, 500, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
             if(!escalasAleatorias)
@@ -256,13 +256,13 @@ int main(void)
             escalasAleatorias = GuiCheckBox((Rectangle){ 150, 380, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
 
 
-            senoFunction = GuiCheckBox((Rectangle){ 750, 380, 20, 20 }, "Sin Original", senoFunction);
+            funcionSenoActivada = GuiCheckBox((Rectangle){ 750, 380, 20, 20 }, "Sin Original", funcionSenoActivada);
         
-            triangularFunction = GuiCheckBox((Rectangle){ 750, 420, 20, 20 }, "Triangular", triangularFunction);
+            funcionTrinagularActivada = GuiCheckBox((Rectangle){ 750, 420, 20, 20 }, "Triangular", funcionTrinagularActivada);
         
-            cuadradaFunction = GuiCheckBox((Rectangle){ 750, 460, 20, 20 }, "Cuadrada", cuadradaFunction);
+            funcionCuadraticaActivada = GuiCheckBox((Rectangle){ 750, 460, 20, 20 }, "Cuadrada", funcionCuadraticaActivada);
         
-            sawFunction = GuiCheckBox((Rectangle){ 750, 500, 20, 20 }, "Sierra", sawFunction);
+            fundionSierraActivada = GuiCheckBox((Rectangle){ 750, 500, 20, 20 }, "Sierra", fundionSierraActivada);
             //------------------------------------------------------------------------------
 
             for (int i = 0; i < pantallaAncho; i++)
@@ -288,7 +288,7 @@ int main(void)
     free(bufferUnCiclo);                 // Unload sine wave bufferUnCiclo
     free(bufferPorFrame);             // Unload write buffer
 
-    UnloadAudioStream(stream);   // Close raw audio stream and delete buffers from RAM
+    UnloadAudioStream(torrenteDeAudio);   // Close raw audio torrenteDeAudio and delete buffers from RAM
     CloseAudioDevice();         // Close audio device (music streaming is automatically stopped)
 
     CloseWindow();              // Close window and OpenGL context
@@ -299,65 +299,65 @@ int main(void)
 
 float seleccionarNota(float perilla5)
 {   
-            float frequency = 0;
+            float freq = 0;
             if (IsKeyDown(KEY_Z)) {
-                frequency = 261.6f;
+                freq = 261.6f;
 
             }
-            // frequency para tecla DO #
+            // freq para tecla DO #
             if (IsKeyDown(KEY_S)) {
-                frequency = 277.2f;
+                freq = 277.2f;
             }
-            //frequency para tecla RE
+            //freq para tecla RE
             if (IsKeyDown(KEY_X)) {
-                frequency = 293.6f;
+                freq = 293.6f;
             }
-            //frequency para tecla RE#
+            //freq para tecla RE#
             if (IsKeyDown(KEY_D))  {
-                frequency = 311.1f;
+                freq = 311.1f;
             }
-            //frequency para tecla MI
+            //freq para tecla MI
             if (IsKeyDown(KEY_C)) {
-                frequency = 329.6f;
+                freq = 329.6f;
             }
-            //frequency para tecla FA
+            //freq para tecla FA
             if (IsKeyDown(KEY_V)) {
-                frequency = 349.2f;
+                freq = 349.2f;
             }
-            //frequency para tecla FA#
+            //freq para tecla FA#
             if (IsKeyDown(KEY_G)) {
-                frequency = 370.0f;
+                freq = 370.0f;
             }
-            //frequency para tecla SOL
+            //freq para tecla SOL
             if (IsKeyDown(KEY_B)) {
-                frequency = 392.0f;
+                freq = 392.0f;
             }
-            //frequency para tecla SOL#
+            //freq para tecla SOL#
             if (IsKeyDown(KEY_H)) {
-                frequency = 415.3f;
+                freq = 415.3f;
             }
-            //frequency para tecla LA
+            //freq para tecla LA
             if (IsKeyDown(KEY_N)) {
-                frequency = 440.0f;
+                freq = 440.0f;
             }
-            //frequency para tecla LA#
+            //freq para tecla LA#
             if (IsKeyDown(KEY_J)) {
-                frequency = 466.2f;
+                freq = 466.2f;
             }
-            //frequency para tecla SI
+            //freq para tecla SI
             if (IsKeyDown(KEY_M)) {
-                frequency = 493.2f;
+                freq = 493.2f;
             }
 
-            return frequency/perilla5;
+            return freq/perilla5;
 }
 float valorRandomAEscala(float perilla5){
 
      //random in range from 5-10;
 
-    static int lower = 1, upper = 5;
+    static int bajo = 1, alto = 5;
 
-    float i = (rand()%(upper - lower + 1)) + lower;
+    float i = (rand()%(alto - bajo + 1)) + bajo;
     
 
     return i;
