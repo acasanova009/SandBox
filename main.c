@@ -230,13 +230,13 @@ int main(void)
             // DrawText("Presionar l para bucle de sonido.", 10, 70, 20, DARKGRAY);
 
         if(senoFunction)
-            perilla1 = GuiSliderBar((Rectangle){ 600, 60, 120, 20 }, "1", NULL, perilla1, -1.0f, 1.0f);
+            perilla1 = GuiSliderBar((Rectangle){ 600, 380, 120, 20 }, "1", NULL, perilla1, -1.0f, 1.0f);
         if(triangularFunction)
-            perilla2 = GuiSliderBar((Rectangle){ 600, 100, 120, 20 }, "2", NULL, perilla2, -1.0f, 1.0f);
+            perilla2 = GuiSliderBar((Rectangle){ 600, 420, 120, 20 }, "2", NULL, perilla2, -1.0f, 1.0f);
         if(cuadradaFunction)
-            perilla3 = GuiSliderBar((Rectangle){ 600, 140, 120, 20 }, "3", NULL, perilla3, -1.0f, 1.0f);
+            perilla3 = GuiSliderBar((Rectangle){ 600, 460, 120, 20 }, "3", NULL, perilla3, -1.0f, 1.0f);
         if(sawFunction)
-            perilla4 = GuiSliderBar((Rectangle){ 600, 180, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
+            perilla4 = GuiSliderBar((Rectangle){ 600, 500, 120, 20 }, "4", NULL, perilla4, -1.0f, 1.0f);
 
             if(!escalasAleatorias)
             {
@@ -256,13 +256,13 @@ int main(void)
             escalasAleatorias = GuiCheckBox((Rectangle){ 150, 380, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
 
 
-            senoFunction = GuiCheckBox((Rectangle){ 750, 60, 20, 20 }, "Sin Original", senoFunction);
+            senoFunction = GuiCheckBox((Rectangle){ 750, 380, 20, 20 }, "Sin Original", senoFunction);
         
-            triangularFunction = GuiCheckBox((Rectangle){ 750, 100, 20, 20 }, "Triangular", triangularFunction);
+            triangularFunction = GuiCheckBox((Rectangle){ 750, 420, 20, 20 }, "Triangular", triangularFunction);
         
-            cuadradaFunction = GuiCheckBox((Rectangle){ 750, 140, 20, 20 }, "Cuadrada", cuadradaFunction);
+            cuadradaFunction = GuiCheckBox((Rectangle){ 750, 460, 20, 20 }, "Cuadrada", cuadradaFunction);
         
-            sawFunction = GuiCheckBox((Rectangle){ 750, 180, 20, 20 }, "Sierra", sawFunction);
+            sawFunction = GuiCheckBox((Rectangle){ 750, 500, 20, 20 }, "Sierra", sawFunction);
             //------------------------------------------------------------------------------
 
             for (int i = 0; i < pantallaAncho; i++)
@@ -270,8 +270,11 @@ int main(void)
                 // position.x = (float)i;
                 
                 DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
+                DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)32000,BLUE);
 
                 DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, RED);
+
+                DrawLine(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, i+1,300 + 50*bufferPorFrame[(i+1)*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000,RED);
                 
             }
             
