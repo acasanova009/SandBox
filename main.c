@@ -11,7 +11,7 @@
 //Nos permite definir tl tamano de podra contener el buffer antes de enviar el audio al audiostream.
 #define MAX_MUESTRAS_POR_FRAME   4096
 //Se usa para definir la cantidad de iteraciones para sumar senos en armonicos.
-#define MAX_SENOS 1000
+#define MAX_SENOS 100
 //Esta funcion basicamente selecciona la frecuencia conforme a la tecla presionada.
 float seleccionarNota(float perilla5);
 
@@ -80,6 +80,9 @@ int main(void)
     //Esta perilla modifica el volumen
     float perilla6= 0.1f;
 
+    //Modificar cantidad de senos.
+    int perilla7= 50.0f;
+    
 
     // float perilla7= 50.0f;
 
@@ -142,7 +145,7 @@ int main(void)
                 //Se desarolla la funcion metamatica para la funcion trinagular.
                 if (funcionTrinagularActivada) {
 
-                    for(int j =1; j<MAX_MUESTRAS;j=j+4)
+                    for(int j =1; j<perilla7;j=j+4)
                     {
                         bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)j*i/longitudDeOnda)*(-amplitud/j);     //1
                         bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
@@ -155,7 +158,7 @@ int main(void)
                 //Se desarolla la funcion metamatica para la funcion cuadratica.
                 if (funcionCuadraticaActivada) {
 
-                    for(int j =1; j<MAX_MUESTRAS;j=j+4)
+                    for(int j =1; j<perilla7;j=j+4)
                     {
                         bufferSumaDeSignals[i]+= perilla3* sinf(2*PI*(float)j*i/longitudDeOnda)*(amplitud/j);     //1
                         bufferSumaDeSignals[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
@@ -167,7 +170,7 @@ int main(void)
                 //Se desarolla la funcion metamatica para la funcion sierra.
                 if (fundionSierraActivada) {
 
-                    for(int j =1; j<MAX_MUESTRAS;j=j+2)
+                    for(int j =1; j<perilla7;j=j+2)
                     {
                         bufferSumaDeSignals[i]+=perilla4*  sinf(2*PI*(float)j*i/longitudDeOnda)*amplitud/j;
                         bufferSumaDeSignals[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/longitudDeOnda)*(amplitud/(j+1));
@@ -256,7 +259,11 @@ int main(void)
 
             //Perilla de volumen.
             perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.25);
+            //Cantidad de iteraciones para el seno.
+            perilla7 = GuiSliderBar((Rectangle){ 600, 10, 120, 20 }, "Iterac.", NULL, perilla7, 0, MAX_SENOS);
 
+
+            
 
             //Preparamos las casillas para que esten en la interfaz. y las conectamos con las variables correpondientes.
             escalasAleatorias = GuiCheckBox((Rectangle){ 150, 380, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
