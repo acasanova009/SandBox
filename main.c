@@ -68,11 +68,11 @@ int main(void)
     //Esta primer perilla va a cambiar la onda sin
     float perilla1= 1.0f;
     //Esta perilla va a cambiar la onda triangular
-    float perilla2= 1.0f;
+    float perilla2= 0.2f;
     //Esta perilla va a cambiar la onda cuadrada
-    float perilla3= 1.0f;
+    float perilla3= 0.5f;
     //Esta perilla va a cambiar la onda sierra
-    float perilla4= 1.0f;
+    float perilla4= 0.5f;
 
     //Esta perilla modifica la escala de la notas.
     float perilla5= 50.0f;
@@ -81,7 +81,7 @@ int main(void)
     float perilla6= 0.1f;
 
     //Modificar cantidad de senos.
-    int perilla7= 50.0f;
+    int perilla7= 3.0f;
     
 
     // float perilla7= 50.0f;
@@ -283,18 +283,18 @@ int main(void)
 
 
 
-            for (int i = 0; i < longitudDeOnda*4; i++)
+            for (int i = 0; i < longitudDeOnda*5; i++)
             {
-                // Primero dibujamos la funcion con pixeles
-                DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
-                //Como quedan espacios huecos, los rellenados con linea.
-                DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)32000,BLUE);
 
             }
             
             for (int i = 0; i < pantallaAncho; i++)
             {
                 
+                // Primero dibujamos la funcion con pixeles
+                DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
+                //Como quedan espacios huecos, los rellenados con linea.
+                DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)32000,BLUE);
 
                 // Primero dibujamos la funcion con pixeles, aplicamos la misma logica pero para el buffer de frames.
                 DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, RED);
