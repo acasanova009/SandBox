@@ -280,13 +280,21 @@ int main(void)
 
 
             //Para corroborar que en efecto se esta desarollando las funciones se implementaron los metodos de dibujo de pixeles directamente el la pantalla.
-            for (int i = 0; i < pantallaAncho; i++)
+
+
+
+            for (int i = 0; i < longitudDeOnda*4; i++)
             {
-                
                 // Primero dibujamos la funcion con pixeles
                 DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
                 //Como quedan espacios huecos, los rellenados con linea.
                 DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)32000,BLUE);
+
+            }
+            
+            for (int i = 0; i < pantallaAncho; i++)
+            {
+                
 
                 // Primero dibujamos la funcion con pixeles, aplicamos la misma logica pero para el buffer de frames.
                 DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, RED);
