@@ -133,12 +133,12 @@ int main(void)
             //Obtenemos la longitud de onda.
             longitudDeOnda = (int)(22050/frecuencia);
             //Revisamos que no salga del espacio predefinido del buffer por el lado derecho.
-            if (longitudDeOnda > MAX_MUESTRAS/2) longitudDeOnda = MAX_MUESTRAS/2;
+            if (longitudDeOnda > MAX_MUESTRAS) longitudDeOnda = MAX_MUESTRAS;
             //Revisamos que no salga del espacio predefinido por el lado izquierdo
             if (longitudDeOnda < 1) longitudDeOnda = 1;
             
             // Escribir funcion al buffer de senales. Pero antes al buffer de suma de senales.
-            for (int i = 0; i < longitudDeOnda*1; i++)
+            for (int i = 0; i < longitudDeOnda; i++)
             {
                 //Funcion matematica para sin
                 if(funcionSenoActivada){
@@ -234,12 +234,7 @@ int main(void)
                 
                 // Este cursor de Lectura se usa principalmente cuando se acaba el tamano del buffer grande, y se tiene que reorganizar desde donde empezar a copiar la informacion del buffer pequeno. Porque se habia cortado la ultima onda, y sonaria mal.
                 cursorDeLectura = (cursorDeLectura + tamanoEscritura) % longitudDeOnda;
-                if (cursorDeLectura != 0)
-                {
-
-                    printf("PRIMERO cL: %d   tE %d    lO %d \n ", cursorDeLectura, tamanoEscritura, longitudDeOnda);
-                    /* code */
-                }
+                
 
 
                 
