@@ -272,7 +272,7 @@ int main(void)
 
             if(!escalasAleatorias)
             {
-                perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 3);
+                perilla5 = GuiSliderBar((Rectangle){ 20, 380, 120, 20 }, "", NULL, perilla5, 1, 7);
                 DrawText(TextFormat("Escala manual: %i",(int)perilla5), 20, 340, 20, BLACK);
 
             }
@@ -287,7 +287,7 @@ int main(void)
             
 
             //Preparamos las casillas para que esten en la interfaz. y las conectamos con las variables correpondientes.
-            escalasAleatorias = GuiCheckBox((Rectangle){ 150, 380, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
+            escalasAleatorias = GuiCheckBox((Rectangle){ 20, 410, 20, 20 }, "Escalas aleatorias", escalasAleatorias);
 
             funcionSenoActivada = GuiCheckBox((Rectangle){ 750, 380, 20, 20 }, "Sin Original", funcionSenoActivada);
         
@@ -304,20 +304,27 @@ int main(void)
 
 
 
-            for (int i = 0; i < longitudDeOnda*5; i++)
-            {
+            // for (int i = 0; i < longitudDeOnda; i++)
+            // {
+                
+                
+            //     // //Como quedan espacios huecos, los rellenados con linea.
+            //     // DrawLine(i, 150 + 100*bufferUnCiclo[i]/(float)bitRateCorrecto, i+1,150 + 100*bufferUnCiclo[(i+1)]/(float)bitRateCorrecto,BLACK);
 
-            }
+            // }
             
             for (int i = 0; i < pantallaAncho; i++)
             {
-                
+
                 // Primero dibujamos la funcion con pixeles
                 DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto, GREEN);
                 //Como quedan espacios huecos, los rellenados con linea.
                 DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto,BLUE);
 
+
                 // Primero dibujamos la funcion con pixeles, aplicamos la misma logica pero para el buffer de frames.
+
+
                 DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)bitRateCorrecto, RED);
 
                 //Como quedan espacios huecos, para el buffer de frames.
