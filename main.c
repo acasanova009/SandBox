@@ -190,8 +190,10 @@ int main(void)
 
             }
 
-            // Escalar la posicion del cursor para minimizar los artefactos de transicion 
+            // Basicamente reubicamos el cursor de lectura al aproxiamado de amplitud relativo a la ultima onda, pero con cuidado de no empezar desde en inicio de la nueva onda, porque sonaria mal. Tenemos que asegurar que es relativo.
             cursorDeLectura = (int)(cursorDeLectura * ((float)longitudDeOnda / (float)viejaLongitudDeOnda));
+            //CUIDADO. Esto tiene que estar perfectamente ligado con el tamano de lectura, de otra manera se desconfigura todo el buffer.
+          
             
         // }
 
@@ -209,16 +211,30 @@ int main(void)
                // Limite para el tamaño leible maximo 
                 int tamanodeLectura = longitudDeOnda-cursorDeLectura;
 
+                //No importa que a veces sea mayor el tamano de lectrua, ya que solo vamos a escribir el tamano de escritura.
+                //Es decir el tercer argumento del siguiente comando.
                 if (tamanoEscritura > tamanodeLectura) tamanoEscritura = tamanodeLectura;
 
                 // Escribe la rebanada
                 memcpy(bufferPorFrame + cursorDeEscritura, bufferUnCiclo + cursorDeLectura, tamanoEscritura*sizeof(short));
 
-                // Actualizar el cursor y el loop de audio 
-                cursorDeLectura = (cursorDeLectura + tamanoEscritura) % longitudDeOnda;
-
                 //Reposicionar el cursorDe Escritura conforme a la longitud del tamano de lectura.
                 cursorDeEscritura += tamanoEscritura;
+
+                
+                // Este cursor de Lectura se usa principalmente cuando se acaba el tamano del buffer grande, y se tiene que reorganizar desde donde empezar a copiar la informacion del buffer pequeno. Porque se habia cortado la ultima onda, y sonaria mal.
+                cursorDeLectura = (cursorDeLectura + tamanoEscritura) % longitudDeOnda;
+                if (cursorDeLectura != 0)
+                {
+
+                    printf("PRIMERO cL: %d   tE %d    lO %d \n ", cursorDeLectura, tamanoEscritura, longitudDeOnda);
+                    /* code */
+                }
+
+
+                
+
+                
             }
 
             // Copiar el frame terminado al flujo de audio 
