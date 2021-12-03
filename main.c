@@ -7,16 +7,16 @@
 #include "extras/raygui.h"      //Requerido para  GUI controls
 
 //Nos permite definir el total de muestra basico
-#define MAX_MUESTRAS               512
+#define MAX_MUESTRAS               500
 //Nos permite definir tl tamano de podra contener el buffer antes de enviar el audio al audiostream.
-#define MAX_MUESTRAS_POR_FRAME   4096
-//Se usa para definir la cantidad de iteraciones para sumar senos en armonicos.
+#define MAX_MUESTRAS_POR_FRAME   4000
+//Se usa para definir la cantidad de iteraciones para sumar senos en armonicos. Max para perilla.
 #define MAX_SENOS 100
 //Esta funcion basicamente selecciona la frecuencia conforme a la tecla presionada.
 float seleccionarNota(float perilla5);
 
 //Nos genera un valor aleatorio para poder cambiar las escalas.
-float valorRandomAEscala(float perilla5);
+float valorRandomAEscala();
 
 int main(void)
 {
@@ -34,7 +34,10 @@ int main(void)
     // Flujo de audio crudo (frecuencia de muestra: 22050, tamaño de muestra: 16bit-short, channels: 1-mono)
     AudioStream torrenteDeAudio = LoadAudioStream(44100, 16, 1);
 
+    
+
     // Buffer para la onda de suma de sanles, para aromincos
+    //Estatico
     short bufferSumaDeSignals[MAX_MUESTRAS] = {0};
 
     //Nos aseguramos este limpio el arreglo, o de otra manera genera ruidos.
@@ -43,6 +46,8 @@ int main(void)
     
     
     // Tamaño en bytes. 2bytes  * 512 = 1024bytes
+    //DINamico
+    
     short *bufferUnCiclo = (short *)malloc(sizeof(short)*MAX_MUESTRAS);
 
     // Frame buffer, describe la forma de onda cuando se repite en el transcurso de un fotograma, mientras se va a copiar directamente al torrente de audio
@@ -63,7 +68,7 @@ int main(void)
 
     
     //Esta ampltid se define como el total de posibilidades de 2a la 16, y se multiplica es seno -1 a 1 por esta cantidad.
-   int amplitud=32500;
+   int bitRateCorrecto=10000;
 
     //Esta primer perilla va a cambiar la onda sin
     float perilla1= 1.0f;
@@ -78,7 +83,7 @@ int main(void)
     float perilla5= 50.0f;
 
     //Esta perilla modifica el volumen
-    float perilla6= 0.1f;
+    float perilla6= 0.03f;
 
     //Modificar cantidad de senos.
     int perilla7= 3.0f;
@@ -118,7 +123,7 @@ int main(void)
         frecuencia = seleccionarNota(perilla5);
 
         if(escalasAleatorias){
-            frecuencia = seleccionarNota(valorRandomAEscala(perilla5));
+            frecuencia = seleccionarNota(valorRandomAEscala());
         }
  
                     
@@ -132,13 +137,13 @@ int main(void)
             //Revisamos que no salga del espacio predefinido por el lado izquierdo
             if (longitudDeOnda < 1) longitudDeOnda = 1;
             
-            // Escribir funcion al buffer. Pero antes al buffer de suma de senales.
-            for (int i = 0; i < longitudDeOnda*2; i++)
+            // Escribir funcion al buffer de senales. Pero antes al buffer de suma de senales.
+            for (int i = 0; i < longitudDeOnda*1; i++)
             {
                 //Funcion matematica para sin
                 if(funcionSenoActivada){
                     
-                    bufferSumaDeSignals[i] += perilla1* (sinf(((2*PI*(float)i/longitudDeOnda)))*32000);
+                    bufferSumaDeSignals[i] += perilla1* (sinf(((2*PI*(float)i/longitudDeOnda)))*bitRateCorrecto);
 
                 }
                 
@@ -147,10 +152,12 @@ int main(void)
 
                     for(int j =1; j<perilla7;j=j+4)
                     {
-                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)j*i/longitudDeOnda)*(-amplitud/j);     //1
-                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
+                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)j*i/longitudDeOnda)*(-bitRateCorrecto/j);     //1
+                        bufferSumaDeSignals[i]+=perilla2* sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(bitRateCorrecto/(j+2));  //3
 
                     }
+
+                    // bufferUnCiclo[i] = ((short)((sinf((2*PI*(float)i/waveLength)))(amplitud*perilla1))-(short)((sinf((2*PI(float)2*i/waveLength)))((amplitud/2)*perilla2))+(short)((sinf((2*PI(float)3*i/waveLength)))((amplitud/3)*perilla3))-(short)((sinf((2*PI(float)4*i/waveLength)))((amplitud/4)*perilla4))+(short)((sinf((2*PI(float)5*i/waveLength)))((amplitud/5)*perilla5))-(short)((sinf((2*PI(float)6*i/waveLength)))((amplitud/6)*perilla6))+(short)((sinf((2*PI(float)7*i/waveLength)))((amplitud/7)*perilla7))-(short)((sinf((2*PI(float)8*i/waveLength)))*((amplitud/8)*perilla8)))+(short)((sinf((2*PI(float)5*i/waveLength)))((amplitud/5)*perilla5))-(short)((sinf((2*PI(float)6*i/waveLength)))((amplitud/6)*perilla6))+(short)((sinf((2*PI(float)7*i/waveLength)))((amplitud/7)*perilla7))-(short)((sinf((2*PI(float)8*i/waveLength)))*((amplitud/8)*perilla8)))+(short)((sinf((2*PI(float)7*i/waveLength)))((amplitud/7)*perilla7))-(short)((sinf((2*PI(float)8*i/waveLength)))*((amplitud/8)*perilla8)))+(short)((sinf((2*PI(float)5*i/waveLength)))((amplitud/5)*perilla5))-(short)((sinf((2*PI(float)6*i/waveLength)))((amplitud/6)*perilla6))+(short)((sinf((2*PI(float)7*i/waveLength)))((amplitud/7)*perilla7))-(short)((sinf((2*PI(float)8*i/waveLength)))*((amplitud/8)*perilla8)))
                     
                 
                 }
@@ -160,8 +167,8 @@ int main(void)
 
                     for(int j =1; j<perilla7;j=j+4)
                     {
-                        bufferSumaDeSignals[i]+= perilla3* sinf(2*PI*(float)j*i/longitudDeOnda)*(amplitud/j);     //1
-                        bufferSumaDeSignals[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(amplitud/(j+2));  //3
+                        bufferSumaDeSignals[i]+= perilla3* sinf(2*PI*(float)j*i/longitudDeOnda)*(bitRateCorrecto/j);     //1
+                        bufferSumaDeSignals[i]+=  perilla3*  sinf(2*PI*(float)(j+2)*i/longitudDeOnda)*(bitRateCorrecto/(j+2));  //3
 
                     }
 
@@ -172,8 +179,9 @@ int main(void)
 
                     for(int j =1; j<perilla7;j=j+2)
                     {
-                        bufferSumaDeSignals[i]+=perilla4*  sinf(2*PI*(float)j*i/longitudDeOnda)*amplitud/j;
-                        bufferSumaDeSignals[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/longitudDeOnda)*(amplitud/(j+1));
+                        bufferSumaDeSignals[i]+=perilla4*  sinf(2*PI*(float)j*i/longitudDeOnda)*bitRateCorrecto/j;
+                        bufferSumaDeSignals[i]-= perilla4* sinf(2*PI*(float)(j+1)*i/longitudDeOnda)*(bitRateCorrecto/(j+1));
+
                     }
                 }
 
@@ -190,7 +198,7 @@ int main(void)
 
             }
 
-            // Basicamente reubicamos el cursor de lectura al aproxiamado de amplitud relativo a la ultima onda, pero con cuidado de no empezar desde en inicio de la nueva onda, porque sonaria mal. Tenemos que asegurar que es relativo.
+            // Basicamente reubicamos el cursor de lectura al aproxiamado de bitRateCorrecto relativo a la ultima onda, pero con cuidado de no empezar desde en inicio de la nueva onda, porque sonaria mal. Tenemos que asegurar que es relativo.
             cursorDeLectura = (int)(cursorDeLectura * ((float)longitudDeOnda / (float)viejaLongitudDeOnda));
             //CUIDADO. Esto tiene que estar perfectamente ligado con el tamano de lectura, de otra manera se desconfigura todo el buffer. Porque se saldria el area de lectura.
           
@@ -217,6 +225,7 @@ int main(void)
                 if (tamanoEscritura > tamanodeLectura) tamanoEscritura = tamanodeLectura;
 
                 // Escribe la rebanada
+                //Se usa meemory allco malloc para poder usar eventaulemnete memcpy.
                 memcpy(bufferPorFrame + cursorDeEscritura, bufferUnCiclo + cursorDeLectura, tamanoEscritura*sizeof(short));
 
                 //Reposicionar el cursorDe Escritura conforme a la longitud del tamano de lectura.
@@ -275,7 +284,7 @@ int main(void)
 
 
             //Perilla de volumen.
-            perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.25);
+            perilla6 = GuiSliderBar((Rectangle){ 400, 10, 120, 20 }, "Vol.", NULL, perilla6, 0, 0.01);
             //Cantidad de iteraciones para el seno.
             perilla7 = GuiSliderBar((Rectangle){ 600, 10, 120, 20 }, "Iterac.", NULL, perilla7, 0, MAX_SENOS);
 
@@ -309,15 +318,15 @@ int main(void)
             {
                 
                 // Primero dibujamos la funcion con pixeles
-                DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, GREEN);
+                DrawPixel(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto, GREEN);
                 //Como quedan espacios huecos, los rellenados con linea.
-                DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)32000, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)32000,BLUE);
+                DrawLine(i, 150 + 100*bufferUnCiclo[i*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto, i+1,150 + 100*bufferUnCiclo[(i+1)*MAX_MUESTRAS/pantallaAncho]/(float)bitRateCorrecto,BLUE);
 
                 // Primero dibujamos la funcion con pixeles, aplicamos la misma logica pero para el buffer de frames.
-                DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, RED);
+                DrawPixel(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)bitRateCorrecto, RED);
 
                 //Como quedan espacios huecos, para el buffer de frames.
-                DrawLine(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000, i+1,300 + 50*bufferPorFrame[(i+1)*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)32000,RED);
+                DrawLine(i, 300 + 50*bufferPorFrame[i*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)bitRateCorrecto, i+1,300 + 50*bufferPorFrame[(i+1)*MAX_MUESTRAS_POR_FRAME/pantallaAncho]/(float)bitRateCorrecto,RED);
                 
             }
             
@@ -396,9 +405,9 @@ float seleccionarNota(float perilla5)
                 freq = 493.2f;
             }
 
-            return freq/perilla5;
+            return freq/(int)perilla5;
 }
-float valorRandomAEscala(float perilla5){
+float valorRandomAEscala(){
 
      //aleatoria en el rango de 5-10;
 
