@@ -192,7 +192,7 @@ int main(void)
 
             // Basicamente reubicamos el cursor de lectura al aproxiamado de amplitud relativo a la ultima onda, pero con cuidado de no empezar desde en inicio de la nueva onda, porque sonaria mal. Tenemos que asegurar que es relativo.
             cursorDeLectura = (int)(cursorDeLectura * ((float)longitudDeOnda / (float)viejaLongitudDeOnda));
-            //CUIDADO. Esto tiene que estar perfectamente ligado con el tamano de lectura, de otra manera se desconfigura todo el buffer.
+            //CUIDADO. Esto tiene que estar perfectamente ligado con el tamano de lectura, de otra manera se desconfigura todo el buffer. Porque se saldria el area de lectura.
           
             
         // }
@@ -209,6 +209,7 @@ int main(void)
                 int tamanoEscritura = MAX_MUESTRAS_POR_FRAME-cursorDeEscritura;
 
                // Limite para el tamaño leible maximo 
+               //Anteriormente en la actualizacion del cursor de lectura, tener cuidado ya podria desconfigurar el buffer.
                 int tamanodeLectura = longitudDeOnda-cursorDeLectura;
 
                 //No importa que a veces sea mayor el tamano de lectrua, ya que solo vamos a escribir el tamano de escritura.
